@@ -4,15 +4,10 @@ import java.util.Calendar;
 
 // Clock class for working with current and past dates
 public class Clock {
-    private Calendar clock;
+    private final Calendar clock;
 
     public Clock() {
         clock = Calendar.getInstance();
-    }
-
-    public Clock(int year, int month, int day) {
-        clock = Calendar.getInstance();
-        clock.set(year, month, day);
     }
 
     public int getDay() {
@@ -27,7 +22,7 @@ public class Clock {
         return this.clock.get(Calendar.YEAR);
     }
 
-    public long getDateInMilis() {
+    public long getDateInMillis() {
         return this.clock.getTimeInMillis();
     }
 

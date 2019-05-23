@@ -51,10 +51,10 @@ public class MainActivity extends AppCompatActivity {
                             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                                 date.setText(String.format("%s.%s.%s", dayOfMonth, month, year));
                                 choseDate2.setEnabled(true);
-                                clkDate1.setDate(year, month, dayOfMonth);  // Remember the ddte #1
+                                clkDate1.setDate(year, month, dayOfMonth);  // Remember the date #1
                             }
                         }, clk.getYear(), clk.getMonth(), clk.getDay());
-                datePickerDialog.getDatePicker().setMaxDate(clk.getDateInMilis());
+                datePickerDialog.getDatePicker().setMaxDate(clk.getDateInMillis());
                 datePickerDialog.show();    // Show calendar dialog
             }
         });
@@ -74,8 +74,8 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }, clk.getYear(), clk.getMonth(), clk.getDay());
                 // Set Min date so the second date needs to be newer
-                datePickerDialog.getDatePicker().setMinDate(clkDate1.getDateInMilis());
-                datePickerDialog.getDatePicker().setMaxDate(clk.getDateInMilis());
+                datePickerDialog.getDatePicker().setMinDate(clkDate1.getDateInMillis());
+                datePickerDialog.getDatePicker().setMaxDate(clk.getDateInMillis());
                 datePickerDialog.show();
             }
         });

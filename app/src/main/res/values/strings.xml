@@ -1,10 +1,8 @@
 <resources>
     <string name="app_name">Meteo</string>
-    <string name="action_settings">Settings</string>
     <string name="chose_date1">Chose date</string>
     <string name="chose_date2">Chose date #2</string>
     <string name="date1_placeholder">Date</string>
-    <string name="date2_placeholder">Date 2</string>
     <string name="range_on">Range</string>
     <string name="range_off">Date</string>
 </resources>

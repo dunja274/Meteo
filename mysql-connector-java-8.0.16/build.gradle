@@ -1,0 +1,10 @@
+configurations.maybeCreate("default")
+
+dependencies {
+   // compile project(path: ':app')
+
+    //implementation 'com.android.support:appcompat-v7:27.1.1'
+    //implementation fileTree(dir: 'libs', include: ['*.jar'])
+    //implementation files('mysql-connector-java-8.0.16/mysql-connector-java-8.0.16.jar')
+}
+//artifacts.add("default", file('mysql-connector-java-8.0.16.jar'))

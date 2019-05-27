@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -34,8 +35,12 @@ public class MainActivity extends AppCompatActivity {
         // Range picker ( ON - Range || OFF - Date )
         final Switch rangeOn = findViewById(R.id.range);
 
-        // Clock for the first date so range can be correct
-        final Clock clkDate1 = new Clock();
+        final Button request = findViewById(R.id.request);
+
+        final Clock clkDate1 = new Clock();     clkDate1.setDate(0,0,0);
+        final Clock clkDate2 = new Clock();     clkDate2.setDate(0,0,0);
+
+        final String[] cities = {"Zagreb", "Osijek", "1", "2"};
 
         // Listener for click on the Date #1
         choseDate.setOnClickListener(new View.OnClickListener() {
@@ -54,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
                                 clkDate1.setDate(year, month, dayOfMonth);  // Remember the date #1
                             }
                         }, clk.getYear(), clk.getMonth(), clk.getDay());
+                request.setVisibility(View.VISIBLE);
                 datePickerDialog.getDatePicker().setMaxDate(clk.getDateInMillis());
                 datePickerDialog.show();    // Show calendar dialog
             }
@@ -71,9 +77,10 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                                 date2.setText(String.format("%s.%s.%s", dayOfMonth, month, year));
+                                clkDate2.setDate(year, month, dayOfMonth);
                             }
                         }, clk.getYear(), clk.getMonth(), clk.getDay());
-                // Set Min date so the second date needs to be newer
+                // Set Min date so the second date needs to be neweS
                 datePickerDialog.getDatePicker().setMinDate(clkDate1.getDateInMillis());
                 datePickerDialog.getDatePicker().setMaxDate(clk.getDateInMillis());
                 datePickerDialog.show();
@@ -84,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
         rangeOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
                 // Switch (ON - range is picked, OFF - only one date is picked)
                 if (isChecked) {
                     date2.setVisibility(View.VISIBLE);
@@ -95,5 +101,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        request.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final ListView listCity = findViewById(R.id.cities);
+                CitiesAdapter ca = new CitiesAdapter(getApplicationContext(), cities);
+                listCity.setAdapter(ca);
+            }
+        });
     }
+
 }

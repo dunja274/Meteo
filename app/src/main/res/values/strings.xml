@@ -5,4 +5,5 @@
     <string name="date1_placeholder">Date</string>
     <string name="range_on">Range</string>
     <string name="range_off">Date</string>
+    <string name="request">Request</string>
 </resources>

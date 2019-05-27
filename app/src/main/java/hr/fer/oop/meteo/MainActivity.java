@@ -59,9 +59,9 @@ public class MainActivity extends AppCompatActivity {
                                 clkDate1.setDate(year, month, dayOfMonth);  // Remember the date #1
                             }
                         }, clk.getYear(), clk.getMonth(), clk.getDay());
-                request.setVisibility(View.VISIBLE);
                 datePickerDialog.getDatePicker().setMaxDate(clk.getDateInMillis());
                 datePickerDialog.show();    // Show calendar dialog
+                request.setVisibility(View.VISIBLE);
             }
         });
 

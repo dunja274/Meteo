@@ -1,15 +1,16 @@
 package hr.fer.oop.meteo;
 
 import java.io.*;
+
 import org.apache.commons.io.IOUtils;
+
 import java.sql.*;
 import java.util.*;
-
 
 public class Database {
 
     //static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/meteo";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/meteo?useUnicode=yes&characterEncoding=UTF-8";
 
     //  Database credentials
     private static final String USER = "root";
@@ -79,11 +80,8 @@ public class Database {
             Statement stmt = conn.createStatement();
             ResultSet rset = stmt.executeQuery("SELECT * FROM meteo WHERE date = '" + date + "'");
             while (rset.next()) {
-                //System.out.println(rset.getString("Rainfall"));
                 InputStream is = rset.getAsciiStream("place");
                 String value = IOUtils.toString(is);
-                //IOUtils.closeStream(is);
-                //String value = Character.toString(is);
                 System.out.println(value);
                 places.add(value);
             }
@@ -95,20 +93,38 @@ public class Database {
         }
     }
 
-   /* public boolean addToDB(String date){
-
+    public static void addToDB(String... dates) throws IOException {
+        try {
+            connectToDB();
+            Statement stmt = conn.createStatement();
+            for (int i = 0; i < dates.length; i++) {
+                Grabber grab = new Grabber(dates[i]);
+                int j = 0;
+                for (String pl : grab.grabPlaces()) {
+                    int rset = stmt.executeUpdate("INSERT INTO meteo (`id`, `date`, `place`, `rainfall`) values (NULL, '" + dates[i] + "','" + pl + "','" + String.valueOf(grab.grabRainfall().get(j)) + "')");
+                    j++;
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            closeDB();
+        }
     }
 
-    public String[] rainfall(String date, String place){
+    /*public static String[] getRainfall(String date, String place){
 
     }*/
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) throws IOException {
 
-        System.out.println(checkIfEx("2019-7-1"));
+     *//*System.out.println(checkIfEx("2019-7-1"));
         for (String place : getPlaces("2019-7-1")){
             System.out.println(place);
-        }
+        }*//*
 
-    }
+        addToDB("2019-05-09");
+        getPlaces("2019-05-09");
+
+    }*/
 }

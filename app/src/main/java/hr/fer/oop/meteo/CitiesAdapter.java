@@ -7,24 +7,26 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.Set;
+
 // TODO(Dino) : Clean up and work on Class
 public class CitiesAdapter extends BaseAdapter {
-    final private String[] countryList;
+    private String[] cities;
     final private LayoutInflater inflater;
 
     public CitiesAdapter(Context applicationContext, String[] countryList) {
-        this.countryList = countryList;
+        this.cities = countryList;
         inflater = (LayoutInflater.from(applicationContext));
     }
 
     @Override
     public int getCount() {
-        return countryList.length;
+        return cities.length;
     }
 
     @Override
-    public Object getItem(int i) {
-        return null;
+    public String getItem(int i) {
+        return cities[i];
     }
 
     @Override
@@ -32,11 +34,15 @@ public class CitiesAdapter extends BaseAdapter {
         return 0;
     }
 
+    public void setCities(Set<String> cities) {
+        this.cities = cities.toArray(new String[cities.size()]);
+    }
+
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         view = inflater.inflate(R.layout.activity_listview, null);
         TextView country = view.findViewById(R.id.textView);
-        country.setText(countryList[i]);
+        country.setText(cities[i]);
         return view;
     }
 }

@@ -1,4 +1,4 @@
-package hr.fer.oop.meteo;
+package hr.fer.oop.meteo.server;
 
 import java.io.*;
 

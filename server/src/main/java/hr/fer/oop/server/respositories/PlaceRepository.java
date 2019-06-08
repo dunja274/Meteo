@@ -16,4 +16,10 @@ public interface PlaceRepository extends CrudRepository<Place, Integer> {
     @Query("select p from Place p where p.date between :date1 AND :date2")
     Set<Place> getByDates(@Param(value = "date1") String date1,
                           @Param(value = "date2") String date2);
+
+    @Query("select case when count(p)> 0 then true else false end from Place p where p.date =:date"
+            + " AND p.place =:place AND p.rainfall =:rainfall")
+    boolean exists(@Param(value = "date") String date,
+                   @Param(value = "place") String place,
+                   @Param(value = "rainfall") Double rainfall);
 }

@@ -1,19 +1,19 @@
 package hr.fer.oop.server.entities;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-// TODO(Dino) : Maybe rename this to Entity
 
 @Entity
 @Table(name = "meteo")
 public class Place {
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String date;
     private String place;
+    private String date;
     private Double rainfall;
 
     public Place() {
@@ -37,7 +37,7 @@ public class Place {
         return place;
     }
 
-    private void setPlace(String place) {
+    public void setPlace(String place) {
         this.place = place;
     }
 
@@ -49,11 +49,11 @@ public class Place {
         return date;
     }
 
-    private void setDate(String date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
-    private void setRainfall(Double rainfall) {
+    public void setRainfall(Double rainfall) {
         this.rainfall = rainfall;
     }
 

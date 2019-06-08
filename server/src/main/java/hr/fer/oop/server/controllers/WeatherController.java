@@ -13,8 +13,6 @@ import hr.fer.oop.server.services.WeatherService;
 
 import static hr.fer.oop.server.resource.RepresentationUtility.throwExceptionIfListNull;
 
-//TODO(Dino) : Add set functions (Weather)
-
 @RestController
 public class WeatherController {
     private final WeatherService weatherService;

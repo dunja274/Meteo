@@ -1,10 +1,20 @@
 package hr.fer.oop.server.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import hr.fer.oop.server.entities.Place;
@@ -14,7 +24,8 @@ import hr.fer.oop.server.services.PlaceService;
 import static hr.fer.oop.server.resource.RepresentationUtility.throwExceptionIfNull;
 import static hr.fer.oop.server.resource.RepresentationUtility.throwExceptionIfSetNull;
 
-//TODO(Dino) : Add set functions (Place)
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 public class PlaceController {
@@ -29,8 +40,8 @@ public class PlaceController {
     }
 
     @GetMapping(value = "/api/place/{id}")
-    public PlaceResource getPlaceById(@PathVariable(value = "id") String id) {
-        Place place = throwExceptionIfNull(placeService.getWithId(Integer.parseInt(id)));
+    public PlaceResource getPlaceById(@PathVariable(value = "id") Integer id) {
+        Place place = throwExceptionIfNull(placeService.getWithId(id));
         return placeAssembler.toResource(place);
     }
 
@@ -45,5 +56,62 @@ public class PlaceController {
                                         @PathVariable(value = "date2") String date2) {
         Set<Place> places = throwExceptionIfSetNull(placeService.getByDates(date1, date2));
         return placeAssembler.toResourceSet(places);
+    }
+
+    @PostMapping(path = "/api/place/", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity newPlace(@RequestBody PlaceResource placeResource) {
+        boolean exists = placeService.exists(placeResource);
+
+        if(exists == true) {
+            return new ResponseEntity("Already exists", HttpStatus.CONFLICT);
+        }
+
+        Place place = placeService.save(placeAssembler.toEntity(placeResource));
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.LOCATION,
+                linkTo(methodOn(PlaceController.class)
+                        .getPlaceById(place.getId())).toString());
+        ResponseEntity response = new ResponseEntity(headers, HttpStatus.CREATED);
+        return response;
+    }
+
+    @PostMapping(path = "/api/places/", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity newPlaces(@RequestBody List<PlaceResource> placeResource) {
+        List<PlaceResource> placesList = new ArrayList<>();
+        for(PlaceResource p : placeResource) {
+            boolean exists = placeService.exists(p);
+            if(exists == false) {
+                placesList.add(p);
+            }
+        }
+
+        Iterable<Place> places = placeService.saveAll(placeAssembler.toIterable(placesList));
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.LOCATION,
+                linkTo(methodOn(PlaceController.class)
+                        .getPlaceById(1)).toString());
+        ResponseEntity response = new ResponseEntity(headers, HttpStatus.CREATED);
+        return response;
+    }
+
+    @PutMapping(value = "/api/place/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity updatePlace(@PathVariable("id") Integer id,
+                                      @RequestBody PlaceResource placeResource) {
+        try {
+            Place place = placeAssembler.toEntity(placeResource);
+            place.setId(id);
+            placeService.update(place);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_MODIFIED)
+                    .eTag(e.getMessage())
+                    .build();
+        }
+    }
+
+    @DeleteMapping("/api/place/{id}")
+    public ResponseEntity deletePlace(@PathVariable("id") Integer id) {
+        placeService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

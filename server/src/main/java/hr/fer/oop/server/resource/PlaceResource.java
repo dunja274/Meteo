@@ -1,5 +1,7 @@
 package hr.fer.oop.server.resource;
 
+import java.util.Objects;
+
 public class PlaceResource {
     private String place;
     private String date;
@@ -18,7 +20,7 @@ public class PlaceResource {
         return place;
     }
 
-    private void setPlace(String place) {
+    public void setPlace(String place) {
         this.place = place;
     }
 
@@ -26,7 +28,7 @@ public class PlaceResource {
         return date;
     }
 
-    private void setDate(String date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -34,7 +36,7 @@ public class PlaceResource {
         return rainfall;
     }
 
-    private void setRainfall(Double ranifall) {
+    public void setRainfall(Double ranifall) {
         this.rainfall = ranifall;
     }
 
@@ -45,5 +47,20 @@ public class PlaceResource {
                 ", date=" + date +
                 ", ranifall=" + rainfall +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PlaceResource resource = (PlaceResource) o;
+        return Objects.equals(place, resource.place) &&
+                Objects.equals(date, resource.date) &&
+                Objects.equals(rainfall, resource.rainfall);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(place, date, rainfall);
     }
 }

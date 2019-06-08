@@ -13,12 +13,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import hr.fer.oop.server.entities.Place;
 import hr.fer.oop.server.resource.PlaceResource;
+import hr.fer.oop.server.services.GrabberService;
 import hr.fer.oop.server.services.PlaceService;
 
 import static hr.fer.oop.server.resource.RepresentationUtility.throwExceptionIfNull;
@@ -31,12 +33,15 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 public class PlaceController {
     private final PlaceService placeService;
     private final PlaceAssembler placeAssembler;
+    private final GrabberService grabberService;
 
     @Autowired
     public PlaceController(PlaceService ps,
-                           PlaceAssembler placeAssembler) {
+                           PlaceAssembler placeAssembler,
+                           GrabberService grabberService) {
         this.placeService = ps;
         this.placeAssembler = placeAssembler;
+        this.grabberService = grabberService;
     }
 
     @GetMapping(value = "/api/place/{id}")
@@ -75,10 +80,48 @@ public class PlaceController {
         return response;
     }
 
-    @PostMapping(path = "/api/places/", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity newPlaces(@RequestBody List<PlaceResource> placeResource) {
+    @PostMapping(path = "/api/places/{date}")
+    public ResponseEntity newPlaces(@PathVariable(value = "date") String date) {
+        List<PlaceResource> grabberList = new ArrayList<>();
         List<PlaceResource> placesList = new ArrayList<>();
-        for(PlaceResource p : placeResource) {
+
+        try {
+            grabberList = new ArrayList<>(grabberService.grabPlaces(date));
+        } catch (IOException e) {
+            e.printStackTrace();
+            //return new ResponseEntity("Error connecting to MeteoInfo", HttpStatus.CONFLICT);
+        }
+        System.out.println(grabberList );
+        for(PlaceResource p : grabberList ) {
+            boolean exists = placeService.exists(p);
+            if(exists == false) {
+                placesList.add(p);
+            }
+        }
+
+        Iterable<Place> places = placeService.saveAll(placeAssembler.toIterable(placesList));
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.LOCATION,
+                linkTo(methodOn(PlaceController.class)
+                        .getPlaceById(1)).toString());
+        ResponseEntity response = new ResponseEntity(headers, HttpStatus.CREATED);
+        return response;
+    }
+
+    @PostMapping(path = "/api/places/{date1}/{date2}")
+    public ResponseEntity newPlaces(@PathVariable(value = "date1") String date1,
+                                    @PathVariable(value = "date2") String date2) {
+        List<PlaceResource> grabberList = new ArrayList<>();
+        List<PlaceResource> placesList = new ArrayList<>();
+
+        try {
+            grabberList = new ArrayList<>(grabberService.grabPlaces(date1,date2));
+        } catch (IOException e) {
+            e.printStackTrace();
+            //return new ResponseEntity("Error connecting to MeteoInfo", HttpStatus.CONFLICT);
+        }
+        System.out.println(grabberList );
+        for(PlaceResource p : grabberList ) {
             boolean exists = placeService.exists(p);
             if(exists == false) {
                 placesList.add(p);

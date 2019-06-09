@@ -1,128 +1,153 @@
 package hr.fer.oop.meteo.activites;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
-import hr.fer.oop.meteo.CitiesAdapter;
 import hr.fer.oop.meteo.R;
+import hr.fer.oop.meteo.net.RestFactory;
+import hr.fer.oop.meteo.net.RestInterface;
 import hr.fer.oop.meteo.util.Clock;
-import hr.fer.oop.meteo.util.PlacesRetrofit;
 
 public class MainActivity extends AppCompatActivity {
 
-    // TODO(Dino) : New screen for graph drawing
-    // TODO(Dino) : List of cities under the buttons
-    // Application main entry point
+    private ListView listCity;
+    private ProgressBar loadSpinner;
+
+    Clock clkDate1 = null;
+    Clock clkDate2 = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final PlacesRetrofit retrofit = new PlacesRetrofit();
+        listCity = findViewById(R.id.cities);
 
-        // First date picker
         final TextView date = findViewById(R.id.chose_date_string);
         final Button choseDate = findViewById(R.id.chose_date);
 
-        // Second date picker
         final TextView date2 = findViewById(R.id.chose_date_string2);
         final Button choseDate2 = findViewById(R.id.chose_date2);
 
-        // Range picker ( ON - Range || OFF - Date )
         final Switch rangeOn = findViewById(R.id.range);
 
         final Button request = findViewById(R.id.request);
 
-        // City list
-        //final Set<String> citiesSet = new HashSet<>();
-        //final String[] cities = citiesSet.toArray(new String[citiesSet.size()]);
 
-        final ListView listCity = findViewById(R.id.cities);
-
-        final Clock clkDate1 = new Clock();
-        clkDate1.setDate(0, 0, 0);
-        final Clock clkDate2 = new Clock();
-
-        clkDate2.setDate(0, 0, 0);
-
-        // Listener for click on the Date #1
         choseDate.setOnClickListener((View v) -> {
             Clock clk = new Clock();
 
-            // Dialog with calendar for the first date
             final DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this,
                     (DatePicker view, int year, int month, int dayOfMonth) -> {
-                        date.setText(String.format("%s.%s.%s", dayOfMonth, month, year));
+                        clkDate1 = new Clock(year, month + 1, dayOfMonth);
+                        date.setText(clkDate1.toString());
                         choseDate2.setEnabled(true);
-                        clkDate1.setDate(year, month, dayOfMonth);  // Remember the date #
+
+                        if (rangeOn.isChecked() == false) rangeOn.setVisibility(View.VISIBLE);
                     }, clk.getYear(), clk.getMonth(), clk.getDay());
             datePickerDialog.getDatePicker().setMaxDate(clk.getDateInMillis());
-            datePickerDialog.show();    // Show calendar dialog
+            datePickerDialog.show();
             request.setVisibility(View.VISIBLE);
         });
 
-        // Same listener for Date #2
         choseDate2.setOnClickListener((View v) -> {
+            Clock clk = new Clock();
 
-                Clock clk = new Clock();
-
-                final DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this,
-                        (DatePicker view, int year, int month, int dayOfMonth) ->  {
-                                date2.setText(String.format("%s.%s.%s", dayOfMonth, month, year));
-                                clkDate2.setDate(year, month, dayOfMonth);
-                        }, clk.getYear(), clk.getMonth(), clk.getDay());
-                // Set Min date so the second date needs to be newe
-                datePickerDialog.getDatePicker().setMinDate(clkDate1.getDateInMillis());
-                datePickerDialog.getDatePicker().setMaxDate(clk.getDateInMillis());
-                datePickerDialog.show();
+            final DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this,
+                    (DatePicker view, int year, int month, int dayOfMonth) -> {
+                        clkDate2 = new Clock(year, month + 1, dayOfMonth);
+                        date2.setText(clkDate2.toString());
+                        request.setEnabled(true);
+                        request.setVisibility(View.VISIBLE);
+                    }, clk.getYear(), clk.getMonth(), clk.getDay());
+            datePickerDialog.getDatePicker().setMinDate(clkDate1.getDateInMillis());
+            datePickerDialog.show();
         });
 
-        // Listener for switch in the corner
         rangeOn.setOnCheckedChangeListener((CompoundButton buttonView, boolean isChecked) -> {
-            // Switch (ON - range is picked, OFF - only one date is picked)
             if (isChecked) {
+                if (clkDate2 == null) request.setEnabled(false);
                 date2.setVisibility(View.VISIBLE);
                 choseDate2.setVisibility(View.VISIBLE);
             } else {
+                clkDate2 = null;
+                if (clkDate1 == null) request.setEnabled(false);
+                date2.setText("");
                 date2.setVisibility(View.INVISIBLE);
                 choseDate2.setVisibility(View.INVISIBLE);
             }
         });
 
         request.setOnClickListener((View v) -> {
-            // TODO(Dino) : fix this
-            Set<String> citiesSet;
-            citiesSet = retrofit.getPlacesByDate(clkDate1.toString());
-            String[] cities = citiesSet.toArray(new String[citiesSet.size()]);
+            @SuppressLint("StaticFieldLeak") AsyncTask<Void, Void, List<String>> task = new AsyncTask<Void, Void, List<String>>() {
 
-            CitiesAdapter ca = new CitiesAdapter(getApplicationContext(), cities);
+                @Override
+                protected void onPreExecute() {
+                    loadSpinner = findViewById(R.id.pBar);
+                    loadSpinner.setVisibility(View.VISIBLE);
+                }
 
-            ca.setCities(citiesSet);
-            listCity.setAdapter(ca);
-            citiesSet.clear();
+                @Override
+                protected List<String> doInBackground(Void... params) {
+                    RestInterface rest = RestFactory.getInstance();
+                    if (clkDate2 != null) {
+                        // TODO(Dunja) : first call POST with one date
+                        return rest.getPlacesByDates(clkDate1.toString(), clkDate2.toString());
+                    } else {
+                        // TODO(Dunja) : first call POST with two dates
+                        return rest.getPlacesByDate(clkDate1.toString());
+                    }
+                }
+
+                @Override
+                protected void onPostExecute(List<String> courses) {
+                    loadSpinner.setVisibility(View.INVISIBLE);
+                    updatePlacesList(courses);
+                }
+            };
+            task.execute();
         });
 
         listCity.setOnItemClickListener((AdapterView<?> parent, View view, int position, long id) -> {
-            Intent chosenCityActivity = new Intent(MainActivity.this, ChosenCityActivity.class);
-            //String chosenCity = ca.getItem(position);
-            //chosenCityActivity.putExtra("chosenCity", chosenCity);
-            //startActivity(chosenCityActivity);
+            Object itemAtPosition = parent.getItemAtPosition(position);
+            String place = (String) itemAtPosition;
+            Intent intent = new Intent(MainActivity.this, ChosenCityActivity.class);
+            intent.putExtra("chosenCity", place);
+            startActivity(intent);
         });
 
     }
 
+    private void updatePlacesList(List<String> places) {
+        PlaceAdapter pa = new PlaceAdapter(this,
+                android.R.layout.simple_list_item_1, places);
+        listCity.setAdapter(pa);
+    }
+
+    private class PlaceAdapter extends ArrayAdapter<String> {
+        private List<String> placeList;
+
+        public PlaceAdapter(Context context, int textViewResourceId, List<String> places) {
+            super(context, textViewResourceId, places);
+            placeList = places;
+        }
+    }
 }

@@ -10,7 +10,7 @@ public class Clock {
         clock = Calendar.getInstance();
     }
 
-    public Clock(int year, int month, int day) {
+    public Clock(Integer year, Integer month, Integer day) {
         clock = Calendar.getInstance();
         this.setDate(year, month, day);
     }
@@ -20,15 +20,15 @@ public class Clock {
         this.setDateInMillis(milis);
     }
 
-    public int getDay() {
+    public Integer getDay() {
         return this.clock.get(Calendar.DAY_OF_MONTH);
     }
 
-    public int getMonth() {
+    public Integer getMonth() {
         return this.clock.get(Calendar.MONTH);
     }
 
-    public int getYear() {
+    public Integer getYear() {
         return this.clock.get(Calendar.YEAR);
     }
 
@@ -38,7 +38,7 @@ public class Clock {
 
     public float getFloatDateInMilis() { return (float) getDateInMillis(); }
 
-    public void setDate(int year, int month, int day) {
+    public void setDate(Integer year, Integer month, Integer day) {
         this.clock.set(year, month, day);
     }
 
@@ -46,12 +46,18 @@ public class Clock {
         this.clock.setTimeInMillis(milis);
     }
 
-    public void addDays(int amount) {
+    public void addDays(Integer amount) {
         this.clock.add(Calendar.DATE, amount);
     }
 
     public String toString() {
-        return getYear() + "-" + getMonth() + "-" + getDay();
+        String year = getYear().toString();
+        String month = getMonth().toString();
+        if(month.length() == 1) month = "0" + month;
+        String day = getDay().toString();
+        if(day.length() == 1) day = "0" + day;
+
+        return year + "-" + month + "-" + day;
     }
 
 }

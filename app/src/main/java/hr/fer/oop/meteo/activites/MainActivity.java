@@ -20,6 +20,7 @@ import java.util.Set;
 import hr.fer.oop.meteo.CitiesAdapter;
 import hr.fer.oop.meteo.R;
 import hr.fer.oop.meteo.util.Clock;
+import hr.fer.oop.meteo.util.PlacesRetrofit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        final PlacesRetrofit retrofit = new PlacesRetrofit();
 
         // First date picker
         final TextView date = findViewById(R.id.chose_date_string);
@@ -45,16 +48,15 @@ public class MainActivity extends AppCompatActivity {
         final Button request = findViewById(R.id.request);
 
         // City list
-        final Set<String> citiesSet = new HashSet<>();
-        final String[] cities = citiesSet.toArray(new String[citiesSet.size()]);
+        //final Set<String> citiesSet = new HashSet<>();
+        //final String[] cities = citiesSet.toArray(new String[citiesSet.size()]);
 
         final ListView listCity = findViewById(R.id.cities);
-        CitiesAdapter ca = new CitiesAdapter(getApplicationContext(), cities);
-        listCity.setAdapter(ca);
 
         final Clock clkDate1 = new Clock();
         clkDate1.setDate(0, 0, 0);
         final Clock clkDate2 = new Clock();
+
         clkDate2.setDate(0, 0, 0);
 
         // Listener for click on the Date #1
@@ -102,9 +104,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         request.setOnClickListener((View v) -> {
-            for (Integer i = 0; i < 25; i++) {
-                citiesSet.add(i.toString());
-            }
+            // TODO(Dino) : fix this
+            Set<String> citiesSet;
+            citiesSet = retrofit.getPlacesByDate(clkDate1.toString());
+            String[] cities = citiesSet.toArray(new String[citiesSet.size()]);
+
+            CitiesAdapter ca = new CitiesAdapter(getApplicationContext(), cities);
+
             ca.setCities(citiesSet);
             listCity.setAdapter(ca);
             citiesSet.clear();
@@ -112,9 +118,9 @@ public class MainActivity extends AppCompatActivity {
 
         listCity.setOnItemClickListener((AdapterView<?> parent, View view, int position, long id) -> {
             Intent chosenCityActivity = new Intent(MainActivity.this, ChosenCityActivity.class);
-            String chosenCity = ca.getItem(position);
-            chosenCityActivity.putExtra("chosenCity", chosenCity);
-            startActivity(chosenCityActivity);
+            //String chosenCity = ca.getItem(position);
+            //chosenCityActivity.putExtra("chosenCity", chosenCity);
+            //startActivity(chosenCityActivity);
         });
 
     }

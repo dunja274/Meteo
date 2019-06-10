@@ -24,6 +24,7 @@ import java.util.List;
 import hr.fer.oop.meteo.R;
 import hr.fer.oop.meteo.entity.Place;
 import hr.fer.oop.meteo.net.PlacesRetrofit;
+import hr.fer.oop.meteo.net.PlacesService;
 import hr.fer.oop.meteo.net.RestFactory;
 import hr.fer.oop.meteo.net.RestInterface;
 import hr.fer.oop.meteo.util.Clock;
@@ -59,9 +60,10 @@ public class MainActivity extends AppCompatActivity {
 
             final DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this,
                     (DatePicker view, int year, int month, int dayOfMonth) -> {
-                        clkDate1 = new Clock(year, month + 1, dayOfMonth);
+                        clkDate1 = new Clock(year, month, dayOfMonth);
                         date.setText(clkDate1.toString());
                         choseDate2.setEnabled(true);
+                        request.setEnabled(true);
 
                         if (rangeOn.isChecked() == false) rangeOn.setVisibility(View.VISIBLE);
                     }, clk.getYear(), clk.getMonth(), clk.getDay());
@@ -75,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
             final DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this,
                     (DatePicker view, int year, int month, int dayOfMonth) -> {
-                        clkDate2 = new Clock(year, month + 1, dayOfMonth);
+                        clkDate2 = new Clock(year, month, dayOfMonth);
                         date2.setText(clkDate2.toString());
                         request.setEnabled(true);
                         request.setVisibility(View.VISIBLE);
@@ -99,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         request.setOnClickListener((View v) -> {
-            @SuppressLint("StaticFieldLeak") AsyncTask<Void, Void, List<String>> task = new AsyncTask<Void, Void, List<String>>() {
+            @SuppressLint("StaticFieldLeak") AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
 
                 @Override
                 protected void onPreExecute() {
@@ -108,24 +110,40 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 @Override
-                protected List<String> doInBackground(Void... params) {
+                protected Void doInBackground(Void... params) {
                     RestInterface rest = RestFactory.getInstance();
                     if (clkDate2 != null) {
                         // TODO(Dunja) : first call POST with one date
                         rest.newPlaces(clkDate1.toString(), clkDate2.toString());
-                        return rest.getPlacesByDates(clkDate1.toString(), clkDate2.toString());
                     } else {
                         // TODO(Dunja) : first call POST with two dates
-                        //rest.newPlace(new Place(1,"Oss","2019-05-03",24.4));
                         rest.newPlaces(clkDate1.toString());
-                        return rest.getPlacesByDate(clkDate1.toString());
                     }
+                    return null;
                 }
 
                 @Override
-                protected void onPostExecute(List<String> courses) {
-                    loadSpinner.setVisibility(View.INVISIBLE);
-                    updatePlacesList(courses);
+                protected void onPostExecute(Void finished) {
+                    @SuppressLint("StaticFieldLeak") AsyncTask<Void, Void, List<String>> task2 = new AsyncTask<Void, Void, List<String>>() {
+
+                        @Override
+                        protected List<String> doInBackground(Void... voids) {
+                            RestInterface rest = RestFactory.getInstance();
+                            if (clkDate2 != null) {
+                                // rest.newPlaces(clkDate1.toString(), clkDate2.toString());
+                                return rest.getPlacesByDates(clkDate1.toString(), clkDate2.toString());
+                            } else {
+                                //rest.newPlaces(clkDate1.toString());
+                                return rest.getPlacesByDate(clkDate1.toString());
+                            }
+                        }
+
+                        protected void onPostExecute(List<String> places) {
+                            loadSpinner.setVisibility(View.INVISIBLE);
+                            updatePlacesList(places);
+                        }
+                    };
+                    task2.execute();
                 }
             };
             task.execute();
@@ -137,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, ChosenCityActivity.class);
             intent.putExtra("chosenCity", place);
             intent.putExtra("date1", clkDate1.toString());
-            intent.putExtra("date2", clkDate2.toString());
+            if(clkDate2 != null) intent.putExtra("date2", clkDate2.toString());
             startActivity(intent);
         });
 

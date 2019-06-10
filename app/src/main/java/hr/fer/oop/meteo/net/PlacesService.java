@@ -23,13 +23,13 @@ public interface PlacesService {
                                         @Path("date2") String date2);
 
     @POST("/api/place/")
-    public boolean newPlace(@Body Place placeResource);
+    public Place newPlace(@Body Place placeResource);
 
     @POST("/api/places/{date}")
-    public boolean newPlaces(@Path("date") String date);
+    public Place newPlaces(@Path("date") String date);
 
     @POST("/api/places/{date1}/{date2}")
-    public boolean newPlaces(@Path("date1") String date1,
+    public Place newPlaces(@Path("date1") String date1,
                                     @Path("date2") String date2);
 
     @PUT("/api/place/{id}")

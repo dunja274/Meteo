@@ -34,19 +34,17 @@ public class PlacesRetrofit implements RestInterface {
         return service.getPlacesByDates(date1, date2);
     }
     @Override
-    public boolean newPlace(Place placeResource){
+    public Place newPlace(Place placeResource){
         return service.newPlace(placeResource);
-        //return;
     }
 
     @Override
-    public boolean newPlaces(String date){
+    public Place newPlaces(String date){
         return service.newPlaces(date);
-        //return;
     }
 
     @Override
-    public boolean newPlaces(String date1, String date2){
+    public Place newPlaces(String date1, String date2){
         return service.newPlaces(date1, date2);
     }
 
@@ -60,5 +58,8 @@ public class PlacesRetrofit implements RestInterface {
         return service.deletePlace(id);
     }
 
+    public PlacesService getService() {
+        return this.service;
+    }
 
 }

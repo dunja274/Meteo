@@ -20,6 +20,11 @@ public class Clock {
         this.setDateInMillis(milis);
     }
 
+    public Clock(Clock c1) {
+        this.clock = Calendar.getInstance();
+        this.setDate(c1.getYear(), getDay(), getMonth());
+    }
+
     public Integer getDay() {
         return this.clock.get(Calendar.DAY_OF_MONTH);
     }
@@ -32,11 +37,7 @@ public class Clock {
         return this.clock.get(Calendar.YEAR);
     }
 
-    public long getDateInMillis() {
-        return this.clock.getTimeInMillis();
-    }
-
-    public float getFloatDateInMilis() { return (float) getDateInMillis(); }
+    public long getDateInMillis() { return this.clock.getTimeInMillis(); }
 
     public void setDate(Integer year, Integer month, Integer day) {
         this.clock.set(year, month, day);
@@ -52,7 +53,8 @@ public class Clock {
 
     public String toString() {
         String year = getYear().toString();
-        String month = getMonth().toString();
+        Integer monthInt = getMonth() + 1;
+        String month = monthInt.toString();
         if(month.length() == 1) month = "0" + month;
         String day = getDay().toString();
         if(day.length() == 1) day = "0" + day;

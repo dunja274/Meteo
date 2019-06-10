@@ -12,11 +12,11 @@ public interface RestInterface {
 
     public List<String> getPlacesByDates(String date1, String date2);
 
-    public boolean newPlace(Place placeResource);
+    public Place newPlace(Place placeResource);
 
-    public boolean newPlaces(String date);
+    public Place newPlaces(String date);
 
-    public boolean newPlaces(String date1, String date2);
+    public Place newPlaces(String date1, String date2);
 
     public boolean updatePlace(Integer id, Place placeResource);
 

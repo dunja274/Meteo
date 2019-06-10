@@ -17,25 +17,25 @@ public interface PlacesService {
 
     @GET("/api/date/{date}")
     public List<String> getPlacesByDate(@Path("date") String date);
-
+    
     @GET("/api/dates/{date1}/{date2}")
     public List<String> getPlacesByDates(@Path("date1") String date1,
                                         @Path("date2") String date2);
 
     @POST("/api/place/")
-    public ResponseEntity newPlace(@Body Place placeResource);
+    public boolean newPlace(@Body Place placeResource);
 
     @POST("/api/places/{date}")
-    public void  newPlaces(@Path("date") String date);
+    public boolean newPlaces(@Path("date") String date);
 
     @POST("/api/places/{date1}/{date2}")
-    public void newPlaces(@Path("date1") String date1,
+    public boolean newPlaces(@Path("date1") String date1,
                                     @Path("date2") String date2);
 
     @PUT("/api/place/{id}")
-    public void updatePlace(@Path("id") Integer id,
+    public boolean updatePlace(@Path("id") Integer id,
                                       @Body Place placeResource);
 
     @DELETE("/api/place/{id}")
-    public void deletePlace(@Path("id") Integer id);
+    public boolean deletePlace(@Path("id") Integer id);
 }

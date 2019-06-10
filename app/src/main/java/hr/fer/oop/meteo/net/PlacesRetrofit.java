@@ -33,7 +33,32 @@ public class PlacesRetrofit implements RestInterface {
     public List<String> getPlacesByDates(String date1, String date2){
         return service.getPlacesByDates(date1, date2);
     }
+    @Override
+    public boolean newPlace(Place placeResource){
+        return service.newPlace(placeResource);
+        //return;
+    }
 
-    // TODO(Dunja) : add POST void functions
+    @Override
+    public boolean newPlaces(String date){
+        return service.newPlaces(date);
+        //return;
+    }
+
+    @Override
+    public boolean newPlaces(String date1, String date2){
+        return service.newPlaces(date1, date2);
+    }
+
+    @Override
+    public boolean updatePlace(Integer id, Place placeResource){
+        return service.updatePlace(id, placeResource);
+    }
+
+    @Override
+    public boolean deletePlace(Integer id){
+        return service.deletePlace(id);
+    }
+
 
 }

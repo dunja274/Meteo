@@ -22,6 +22,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.List;
 
 import hr.fer.oop.meteo.R;
+import hr.fer.oop.meteo.entity.Place;
+import hr.fer.oop.meteo.net.PlacesRetrofit;
 import hr.fer.oop.meteo.net.RestFactory;
 import hr.fer.oop.meteo.net.RestInterface;
 import hr.fer.oop.meteo.util.Clock;
@@ -110,9 +112,12 @@ public class MainActivity extends AppCompatActivity {
                     RestInterface rest = RestFactory.getInstance();
                     if (clkDate2 != null) {
                         // TODO(Dunja) : first call POST with one date
+                        rest.newPlaces(clkDate1.toString(), clkDate2.toString());
                         return rest.getPlacesByDates(clkDate1.toString(), clkDate2.toString());
                     } else {
                         // TODO(Dunja) : first call POST with two dates
+                        //rest.newPlace(new Place(1,"Oss","2019-05-03",24.4));
+                        rest.newPlaces(clkDate1.toString());
                         return rest.getPlacesByDate(clkDate1.toString());
                     }
                 }
@@ -131,6 +136,8 @@ public class MainActivity extends AppCompatActivity {
             String place = (String) itemAtPosition;
             Intent intent = new Intent(MainActivity.this, ChosenCityActivity.class);
             intent.putExtra("chosenCity", place);
+            intent.putExtra("date1", clkDate1.toString());
+            intent.putExtra("date2", clkDate2.toString());
             startActivity(intent);
         });
 

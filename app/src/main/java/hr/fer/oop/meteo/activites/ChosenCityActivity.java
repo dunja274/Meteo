@@ -36,6 +36,7 @@ public class ChosenCityActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chosen_city);
 
         String chosenCity = getIntent().getStringExtra("chosenCity");
+        String date1 = getIntent().getStringExtra("date1");
 
         final Toolbar toolbar = findViewById(R.id.city_toolbar);
         setSupportActionBar(toolbar);

@@ -12,5 +12,14 @@ public interface RestInterface {
 
     public List<String> getPlacesByDates(String date1, String date2);
 
-    // TODO(Dunja) add POST functions public void setPlaces() ...
+    public boolean newPlace(Place placeResource);
+
+    public boolean newPlaces(String date);
+
+    public boolean newPlaces(String date1, String date2);
+
+    public boolean updatePlace(Integer id, Place placeResource);
+
+    public boolean deletePlace(Integer id);
+
 }

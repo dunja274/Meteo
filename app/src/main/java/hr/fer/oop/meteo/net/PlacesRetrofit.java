@@ -1,6 +1,7 @@
 package hr.fer.oop.meteo.net;
 
 import java.util.List;
+import java.util.*;
 
 import hr.fer.oop.meteo.entity.Place;
 import retrofit.*;
@@ -33,6 +34,17 @@ public class PlacesRetrofit implements RestInterface {
     public List<String> getPlacesByDates(String date1, String date2){
         return service.getPlacesByDates(date1, date2);
     }
+
+    @Override
+    public Map<String,Double> getWeatherByDate(String place, String date){
+        return service.getWeatherByDate(place, date);
+    }
+
+    @Override
+    public Map<String,Double> getWeatherByDates(String place, String date1, String date2){
+        return service.getWeatherByDates(place, date1, date2);
+    }
+
     @Override
     public Place newPlace(Place placeResource){
         return service.newPlace(placeResource);

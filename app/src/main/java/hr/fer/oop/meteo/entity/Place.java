@@ -1,7 +1,6 @@
 package hr.fer.oop.meteo.entity;
 import java.io.Serializable;
-import java.util.Objects;
-import java.util.Set;
+
 
 public class Place implements Serializable {
 

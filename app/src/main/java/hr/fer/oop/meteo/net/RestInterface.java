@@ -1,6 +1,6 @@
 package hr.fer.oop.meteo.net;
 
-import java.util.List;
+import java.util.*;
 
 import hr.fer.oop.meteo.entity.Place;
 
@@ -11,6 +11,10 @@ public interface RestInterface {
     public List<String> getPlacesByDate(String date);
 
     public List<String> getPlacesByDates(String date1, String date2);
+
+    public Map<String,Double> getWeatherByDate(String place, String date);
+
+    public Map<String,Double> getWeatherByDates(String place, String date1, String date2);
 
     public Place newPlace(Place placeResource);
 

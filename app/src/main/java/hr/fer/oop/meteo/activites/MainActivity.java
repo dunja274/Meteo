@@ -22,9 +22,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.List;
 
 import hr.fer.oop.meteo.R;
-import hr.fer.oop.meteo.entity.Place;
-import hr.fer.oop.meteo.net.PlacesRetrofit;
-import hr.fer.oop.meteo.net.PlacesService;
 import hr.fer.oop.meteo.net.RestFactory;
 import hr.fer.oop.meteo.net.RestInterface;
 import hr.fer.oop.meteo.util.Clock;
@@ -113,10 +110,8 @@ public class MainActivity extends AppCompatActivity {
                 protected Void doInBackground(Void... params) {
                     RestInterface rest = RestFactory.getInstance();
                     if (clkDate2 != null) {
-                        // TODO(Dunja) : first call POST with one date
                         rest.newPlaces(clkDate1.toString(), clkDate2.toString());
                     } else {
-                        // TODO(Dunja) : first call POST with two dates
                         rest.newPlaces(clkDate1.toString());
                     }
                     return null;

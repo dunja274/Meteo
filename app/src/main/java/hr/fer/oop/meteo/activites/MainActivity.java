@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.Collections;
 import java.util.List;
 
 import hr.fer.oop.meteo.R;
@@ -30,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ListView listCity;
     private ProgressBar loadSpinner;
+
+    PlaceAdapter pa = null;
 
     Clock clkDate1 = null;
     Clock clkDate2 = null;
@@ -51,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
 
         final Button request = findViewById(R.id.request);
 
-
         choseDate.setOnClickListener((View v) -> {
             Clock clk = new Clock();
 
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                         choseDate2.setEnabled(true);
                         request.setEnabled(true);
 
-                        if (rangeOn.isChecked() == false) rangeOn.setVisibility(View.VISIBLE);
+                        if (!rangeOn.isChecked()) rangeOn.setVisibility(View.VISIBLE);
                     }, clk.getYear(), clk.getMonth(), clk.getDay());
             datePickerDialog.getDatePicker().setMaxDate(clk.getDateInMillis());
             datePickerDialog.show();
@@ -80,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
                         request.setVisibility(View.VISIBLE);
                     }, clk.getYear(), clk.getMonth(), clk.getDay());
             datePickerDialog.getDatePicker().setMinDate(clkDate1.getDateInMillis());
+            datePickerDialog.getDatePicker().setMaxDate(clk.getDateInMillis());
             datePickerDialog.show();
         });
 
@@ -135,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
                         protected void onPostExecute(List<String> places) {
                             loadSpinner.setVisibility(View.INVISIBLE);
+                            Collections.sort(places);
                             updatePlacesList(places);
                         }
                     };
@@ -145,29 +149,29 @@ public class MainActivity extends AppCompatActivity {
         });
 
         listCity.setOnItemClickListener((AdapterView<?> parent, View view, int position, long id) -> {
+
             Object itemAtPosition = parent.getItemAtPosition(position);
             String place = (String) itemAtPosition;
             Intent intent = new Intent(MainActivity.this, ChosenCityActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("chosenCity", place);
             intent.putExtra("date1", clkDate1.toString());
-            if(clkDate2 != null) intent.putExtra("date2", clkDate2.toString());
+            if (clkDate2 != null) intent.putExtra("date2", clkDate2.toString());
             startActivity(intent);
         });
 
     }
 
     private void updatePlacesList(List<String> places) {
-        PlaceAdapter pa = new PlaceAdapter(this,
+        this.pa = new PlaceAdapter(this,
                 android.R.layout.simple_list_item_1, places);
-        listCity.setAdapter(pa);
+        listCity.setAdapter(this.pa);
     }
 
     private class PlaceAdapter extends ArrayAdapter<String> {
-        private List<String> placeList;
 
         public PlaceAdapter(Context context, int textViewResourceId, List<String> places) {
             super(context, textViewResourceId, places);
-            placeList = places;
         }
     }
 }

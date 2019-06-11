@@ -1,9 +1,6 @@
 <resources>
     <string name="app_name">Meteo</string>
     <string name="chose_date1">Chose date</string>
-    <string name="chose_date2">Chose date #2</string>
-    <string name="date1_placeholder">Date</string>
     <string name="range">Range</string>
     <string name="request">Request</string>
-    <string name="showing_date">Showing rainfall for : %1$s</string>
 </resources>

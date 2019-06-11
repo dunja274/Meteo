@@ -1,4 +1,5 @@
 package hr.fer.oop.meteo.entity;
+
 import java.io.Serializable;
 
 
@@ -48,7 +49,7 @@ public class Place implements Serializable {
         return "PlaceResource{" +
                 "place='" + place + '\'' +
                 ", date=" + date +
-                ", ranifall=" + rainfall +
+                ", rainfall=" + rainfall +
                 '}';
     }
 

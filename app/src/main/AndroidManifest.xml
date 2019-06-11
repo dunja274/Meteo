@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        android:fullBackupContent="@xml/backup_descriptor">
 
         <activity
             android:name=".activites.MainActivity"
@@ -28,7 +29,6 @@
 
         <activity
             android:name=".activites.ChosenCityActivity"
-            android:parentActivityName=".activites.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
